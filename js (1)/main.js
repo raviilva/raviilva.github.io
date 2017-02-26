@@ -448,12 +448,24 @@ var resizePizzas = function(size) {
   }
 
   // Iterates through pizza elements on the page and changes their widths
+  ///document.querySelectorAll changed to getElementsByClassName
+  // my code
+ //optimized the loop by removing all code not dependent on i out of the loop
+ //replaced .querySelectorAll with .getElementById and assigned the results to allPizzaContainers
+
   function changePizzaSizes(size) {
-    for (var i = 0; i < document.querySelectorAll(".randomPizzaContainer").length; i++) {
-      var dx = determineDx(document.querySelectorAll(".randomPizzaContainer")[i], size);
-      var newwidth = (document.querySelectorAll(".randomPizzaContainer")[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+
+    var allPizzaContainers = document.getElementsByClassName("randomPizzaContainer");
+    var allPizzas = allPizzaContainers.length;
+    var dx = determineDx(allPizzaContainers[0], size);
+    var newwidth = (allPizzaContainers[0].offsetWidth + dx) + 'px';
+
+    for (var i = 0; i < allPizzas; i++) {
+
+      allPizzaContainers[i].style.width = newwidth;
+
     }
+
   }
 
   changePizzaSizes(size);
@@ -498,14 +510,21 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 
 // Moves the sliding background pizzas based on scroll position
 function updatePositions() {
-  frame++;
-  window.performance.mark("mark_start_frame");
+frame++;
+window.performance.mark("mark_start_frame");
 
-  var items = document.querySelectorAll('.mover');
-  for (var i = 0; i < items.length; i++) {
-    var phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
+var items = document.getElementsByClassName('mover');
+var scroll = document.body.scrollTop
+var PhaseArr = []
+
+for(var i = 0; i < 5; i++) {
+PhaseArr.push(Math.sin((scroll / 1250) +(i % 5)));
+}
+
+for(var j = 0; j < items.length; j++) {
+var phase = PhaseArr[j % 5] * 100
+items[j].style.left = items[j].basicLeft + phase + 'px';
+}
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
@@ -521,10 +540,11 @@ function updatePositions() {
 window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
+//background pizzas reduced to 24
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  for (var i = 0; i < 24; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
